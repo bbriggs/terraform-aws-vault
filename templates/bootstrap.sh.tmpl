@@ -11,14 +11,14 @@ hostnamectl set-hostname $$hostname
 
 systemctl start consul
 
-aws ec2 describe-instances --region ${region} --filters 'Name=tag:Name,Values=vault' 'Name=instance-state-iname,Values=running' | jq -r '.Reservations[].Instances[].PrivateIpAddress' > /tmp/instances
+aws ec2 describe-instances --region ${region} --filters 'Name=tag:Name,Values=consul' 'Name=instance-state-name,Values=running' | jq -r '.Reservations[].Instances[].PrivateIpAddress' > /tmp/instances
 
 while read line;
 do
-  if [ "$$line" != "$$internalIP"]; then
-    echo "Attempting to join Consul cluster via $$line"
+  if [ "$$line" != "$$internalIP" ]; then
+    echo "Attempting to join Consul cluster via $$line" >> /tmp/bootstrap.log
     consul join $$line && break
   fi
-done
-
+done < /tmp/instances
+sudo setcap cap_ipc_lock=+ep $$(readlink -f $$(which vault))
 systemctl start vault
