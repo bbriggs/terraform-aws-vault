@@ -96,10 +96,12 @@ data "template_file" "vault-userdata" {
 }
 
 resource "aws_launch_configuration" "vault" {
+  name_prefix     = "vault-"
   image_id        = "${var.ami}"
   instance_type   = "${var.instance_type}"
   key_name        = "${var.key-name}"
   security_groups = ["${var.security_groups}", "${aws_security_group.vault.id}"]
+  iam_instance_profile = "${aws_iam_instance_profile.vault.id}"
   user_data       = "${data.template_file.vault-userdata.rendered}"
 
   lifecycle {
