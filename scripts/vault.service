@@ -6,7 +6,7 @@ After=network-online.target
 [Service]
 EnvironmentFile=-/etc/sysconfig/vault
 Restart=on-failure
-ExecStart=/usr/local/bin/vault -config="/usr/local/etc/vault-config.json" ${VAULT_FLAGS} >> /var/log/vault.log 2>&1
+ExecStart=/usr/local/bin/vault server -config="/usr/local/etc/vault-config.hcl" ${VAULT_FLAGS} >> /var/log/vault.log 2>&1
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]
